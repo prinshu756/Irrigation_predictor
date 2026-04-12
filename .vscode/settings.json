@@ -1,0 +1,36 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python -c \"\nimport torch\nprint\\('PyTorch CUDA available:', torch\\.cuda\\.is_available\\(\\)\\)\nif torch\\.cuda\\.is_available\\(\\):\n    print\\('CUDA device count:', torch\\.cuda\\.device_count\\(\\)\\)\n    print\\('Current device:', torch\\.cuda\\.current_device\\(\\)\\)\n    print\\('Device name:', torch\\.cuda\\.get_device_name\\(\\)\\)\nelse:\n    print\\('CUDA not available, using CPU optimizations'\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd z:\\\\Machine_Learning\\\\Irrigation_Needed ; python -c \"\nimport time\nstart_time = time\\.time\\(\\)\n\n# Quick test of key optimizations\nimport pandas as pd\nimport numpy as np\nimport xgboost as xgb\n\nprint\\('Testing optimizations\\.\\.\\.'\\)\n\n# Load small sample\ntrain = pd\\.read_csv\\('playground-series-s6e4/train\\.csv', nrows=1000\\)\nprint\\(f'Sample loaded: \\{train\\.shape\\}'\\)\n\n# Test GPU\ntry:\n    d = xgb\\.DMatrix\\(np\\.random\\.rand\\(100, 10\\), device='cuda'\\)\n    print\\('GPU XGBoost: Working'\\)\nexcept:\n    print\\('GPU XGBoost: Not working, using CPU'\\)\n\nend_time = time\\.time\\(\\)\nprint\\(f'Test completed in \\{end_time - start_time:\\.2f\\} seconds'\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd z:\\\\Machine_Learning\\\\Irrigation_Needed ; python -c \"\nimport time\nimport pandas as pd\nimport numpy as np\n\nprint\\('Testing optimized feature engineering\\.\\.\\.'\\)\n\n# Load small sample\ntrain = pd\\.read_csv\\('playground-series-s6e4/train\\.csv', nrows=5000\\)\ntest = pd\\.read_csv\\('playground-series-s6e4/test\\.csv', nrows=2000\\)\n\nstart_time = time\\.time\\(\\)\n\n# Test optimized binary flags\nsoil_moisture = train\\['Soil_Moisture'\\]\\.values\nrainfall = train\\['Rainfall_mm'\\]\\.values\ntemp = train\\['Temperature_C'\\]\\.values\nwind = train\\['Wind_Speed_kmh'\\]\\.values\n\nsoil_lt_25 = \\(soil_moisture < 25\\)\\.astype\\(np\\.int8\\)\nrain_lt_300 = \\(rainfall < 300\\)\\.astype\\(np\\.int8\\)\ntemp_gt_30 = \\(temp > 30\\)\\.astype\\(np\\.int8\\)\nwind_gt_10 = \\(wind > 10\\)\\.astype\\(np\\.int8\\)\n\nprint\\(f'Binary flags created for \\{len\\(train\\)\\} samples'\\)\n\n# Test domain features\nrain = train\\['Rainfall_mm'\\]\\.values\nprev = train\\['Previous_Irrigation_mm'\\]\\.values\ntemp = train\\['Temperature_C'\\]\\.values\nsun = train\\['Sunlight_Hours'\\]\\.values\nhumid = train\\['Humidity'\\]\\.values\n\net_proxy = \\(temp \\* sun\\) / \\(humid \\+ 1\\)\ntotal_water = rain \\+ prev\n\nprint\\(f'Domain features computed: ET_Proxy, Total_Water'\\)\n\nend_time = time\\.time\\(\\)\nprint\\(f'Feature engineering completed in \\{end_time - start_time:\\.3f\\} seconds'\\)\nprint\\(f'Memory usage: Optimized with float32/int8 types'\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd \"z:\\\\Machine_Learning\\\\Irrigation_Needed\" ; python -c \"\nimport sklearn\nprint\\('sklearn version:', sklearn\\.__version__\\)\nfrom sklearn\\.preprocessing import TargetEncoder\nimport inspect\nsig = inspect\\.signature\\(TargetEncoder\\.__init__\\)\nprint\\('TargetEncoder parameters:', list\\(sig\\.parameters\\.keys\\(\\)\\)\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd \"z:\\\\Machine_Learning\\\\Irrigation_Needed\" ; python -c \"\n# Test the data loading and preprocessing part\nimport pandas as pd\nimport numpy as np\nfrom sklearn\\.preprocessing import LabelEncoder\n\n# Load data\ntrain = pd\\.read_csv\\('playground-series-s6e4/train\\.csv'\\)\ntest = pd\\.read_csv\\('playground-series-s6e4/test\\.csv'\\)\n\n# Basic preprocessing\nle = LabelEncoder\\(\\)\ntrain\\['Irrigation_Need'\\] = le\\.fit_transform\\(train\\['Irrigation_Need'\\]\\)\ny = train\\['Irrigation_Need'\\]\\.values\n\n# Drop unnecessary columns\ndrop_cols = \\['id'\\]\nX = train\\.drop\\(drop_cols \\+ \\['Irrigation_Need'\\], axis=1\\)\nX_test = test\\.drop\\(drop_cols, axis=1\\)\n\nprint\\('Preprocessing successful!'\\)\nprint\\('X shape:', X\\.shape\\)\nprint\\('y unique values:', np\\.unique\\(y\\)\\)\nprint\\('y shape:', y\\.shape\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd z:\\\\Machine_Learning\\\\Irrigation_Needed ; python -c \"\nfrom sklearn\\.preprocessing import TargetEncoder\nimport inspect\nprint\\('TargetEncoder parameters:'\\)\nsig = inspect\\.signature\\(TargetEncoder\\.__init__\\)\nfor param in sig\\.parameters:\n    if param != 'self':\n        print\\(f'  \\{param\\}: \\{sig\\.parameters\\[param\\]\\}'\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd z:\\\\Machine_Learning\\\\Irrigation_Needed ; python -c \"\nfrom sklearn\\.preprocessing import TargetEncoder\nimport numpy as np\nimport pandas as pd\n\n# Test with proper multiclass data\nX = pd\\.DataFrame\\(\\{'cat': \\['a', 'b', 'a', 'c', 'b', 'a'\\]\\}\\)\ny = np\\.array\\(\\[0, 1, 0, 2, 1, 0\\]\\)  # 3 classes\n\nprint\\('X shape:', X\\.shape\\)\nprint\\('y shape:', y\\.shape\\)\nprint\\('y unique:', np\\.unique\\(y\\)\\)\n\ntry:\n    enc = TargetEncoder\\(target_type='multiclass', cv=3, random_state=42\\)\n    result = enc\\.fit_transform\\(X, y\\)\n    print\\('Transform successful!'\\)\n    print\\('Result shape:', result\\.shape\\)\n    print\\('Result type:', type\\(result\\)\\)\n    print\\('Result:'\\)\n    print\\(result\\)\nexcept Exception as e:\n    print\\('Error:', str\\(e\\)\\)\n    import traceback\n    traceback\\.print_exc\\(\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd \"z:\\\\Machine_Learning\\\\Irrigation_Needed\" ; python -c \"\nimport pandas as pd\nimport numpy as np\n\n# Test empty DataFrame \\.values\ndf = pd\\.DataFrame\\(index=range\\(5\\)\\)\nprint\\('Empty DataFrame shape:', df\\.shape\\)\nprint\\('Empty DataFrame \\.values shape:', df\\.values\\.shape\\)\nprint\\('Empty DataFrame \\.values:', df\\.values\\)\n\n# Test concatenation with empty array\narr1 = np\\.array\\(\\[\\[1, 2\\], \\[3, 4\\]\\]\\)\narr2 = df\\.values\nprint\\('arr1 shape:', arr1\\.shape\\)\nprint\\('arr2 shape:', arr2\\.shape\\)\ntry:\n    result = np\\.concatenate\\(\\[arr1, arr2\\], axis=1\\)\n    print\\('Concatenation successful, result shape:', result\\.shape\\)\nexcept Exception as e:\n    print\\('Concatenation failed:', e\\)\n\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
